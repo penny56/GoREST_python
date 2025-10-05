@@ -1,6 +1,6 @@
 import api.client
 import config.settings
-import random, json
+import random, json, os
 
 def test_create_user():
 
@@ -17,17 +17,52 @@ def test_create_user():
                                   headers=config.settings.HEADERS,
                                   body=data,
                                   expected_status=201)
-    print("test_create_user passed, user id is:", str(json.loads(res.text)['id']))
+    print("\ntest_create_user passed, user id is:", str(json.loads(res.text)['id']))
+
+    # get current dir
+    with open(config.settings.FILE_PATH, "w", encoding="utf-8") as f:
+        f.write(res.text)
 
 def test_create_user_failure():
 
     # duplicated email
-    pass
+    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+        email = json.loads(f.read())['email']
+    
+    data = {
+        "name": "username",
+        "email": email,
+        "gender": "female",
+        "status": "active"
+    }
+    
+    res = api.client.send_request(method="post",
+                                  uri="/public/v2/users",
+                                  headers=config.settings.HEADERS,
+                                  body=data,
+                                  expected_status=422)
+    
+    print("test_create_user_failure passed!")
 
 def test_search_user():
 
     # GET /users/{id}
-    pass
+    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+        data_json = json.load(f) 
+    
+    res = api.client.send_request(method="get",
+                                  uri="/public/v2/users"+"/"+str(data_json['id']),
+                                  headers=config.settings.HEADERS,
+                                  expected_status=200)
+
+    data_res = json.loads(res.text)
+
+    assert data_json['name'] == data_res['name'] and data_json['email'] == data_res['email'] and data_json['gender'] == data_res['gender'] and data_json['status'] == data_res['status'], (
+        f"{res.text}"
+    )
+
+    print("test_search_user passed!")
+
 
 def test_search_user_failure():
 

@@ -1,3 +1,10 @@
 [
-  "tests/test_users.py::test_create_user"
+  "tests/test_users.py::test_create_user",
+  "tests/test_users.py::test_create_user_failure",
+  "tests/test_users.py::test_delete_user",
+  "tests/test_users.py::test_delete_user_failure",
+  "tests/test_users.py::test_search_user",
+  "tests/test_users.py::test_search_user_failure",
+  "tests/test_users.py::test_update_user",
+  "tests/test_users.py::test_update_user_failure"
 ]

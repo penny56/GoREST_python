@@ -15,7 +15,8 @@ def send_request(method: str,
         url=url,
         headers=headers,
         json=body,
-        params=params
+        params=params,
+        verify=False            # turn off SSL verification
     )
 
     if expected_status is not None:
