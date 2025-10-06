@@ -77,7 +77,32 @@ def test_search_user_failure():
 def test_update_user():
 
     # PUT /users/{id}
-    pass
+    # 1. check the gender
+    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+        data_json = json.load(f) 
+
+    old_gender = data_json['gender']
+
+    # 2. update
+    if old_gender == 'male':
+        new_gender = 'female'
+    else:
+        new_gender = 'male'
+
+    data = { "gender": new_gender }
+
+    res = api.client.send_request(method="put",
+                                  uri="/public/v2/users"+"/"+str(data_json['id']),
+                                  headers=config.settings.HEADERS,
+                                  body=data,
+                                  expected_status=200)    
+
+    # 3. confirm the change
+    assert json.loads(res.text)['gender'] == new_gender, (
+        f"{res.text}"
+    )
+
+    print('test_update_user passed!')
 
 def test_update_user_failure():
 
