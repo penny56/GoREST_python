@@ -106,8 +106,19 @@ def test_update_user():
 
 def test_update_user_failure():
 
-    # invalid gender (famale)
-    pass
+    # invalid gender
+    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+        data_json = json.load(f) 
+
+    data = { "gender": 'invalid' }
+
+    res = api.client.send_request(method="put",
+                                  uri="/public/v2/users"+"/"+str(data_json['id']),
+                                  headers=config.settings.HEADERS,
+                                  body=data,
+                                  expected_status=422)    
+
+    print('test_update_user_failure passed!')
 
 def test_delete_user():
 
