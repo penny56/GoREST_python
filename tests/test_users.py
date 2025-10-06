@@ -123,9 +123,25 @@ def test_update_user_failure():
 def test_delete_user():
 
     # DELETE /users/{id}
-    pass
+    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+        data_json = json.load(f) 
+
+    res = api.client.send_request(method="delete",
+                                  uri="/public/v2/users"+"/"+str(data_json['id']),
+                                  headers=config.settings.HEADERS,
+                                  expected_status=204)
+
+    print(f"test_delete_user passed! id: {data_json['id']}")
 
 def test_delete_user_failure():
 
     # delete deleted user (404)
-    pass
+    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+        data_json = json.load(f) 
+
+    res = api.client.send_request(method="delete",
+                                  uri="/public/v2/users"+"/"+str(data_json['id']),
+                                  headers=config.settings.HEADERS,
+                                  expected_status=404)
+
+    print(f"test_delete_user_failure passed!")

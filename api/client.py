@@ -1,5 +1,8 @@
 import requests
+import urllib3
 from config.settings import BASE_URL
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def send_request(method: str,
                  uri: str,
