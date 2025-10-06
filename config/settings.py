@@ -5,4 +5,5 @@ HEADERS = {"Authorization": f"Bearer e7861a22e7bd14084b161ae87e57b4fbbd3213d2ea9
 
 CURR_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(CURR_DIR)
-FILE_PATH = os.path.join(ROOT_DIR, "user_info.json")
+USER_FILE_PATH = os.path.join(ROOT_DIR, "user_info.json")
+POST_FILE_PATH = os.path.join(ROOT_DIR, "post_info.json")

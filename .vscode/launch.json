@@ -11,6 +11,14 @@
             "module": "pytest",
             "args": [ "-s", ".\\tests\\test_users.py" ],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "posts",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [ "-s", ".\\tests\\test_posts.py" ],
+            "console": "integratedTerminal"
         }
 
     ]

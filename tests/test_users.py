@@ -20,13 +20,13 @@ def test_create_user():
     print("\ntest_create_user passed, user id is:", str(json.loads(res.text)['id']))
 
     # get current dir
-    with open(config.settings.FILE_PATH, "w", encoding="utf-8") as f:
+    with open(config.settings.USER_FILE_PATH, "w", encoding="utf-8") as f:
         f.write(res.text)
 
 def test_create_user_failure():
 
     # duplicated email
-    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
         email = json.loads(f.read())['email']
     
     data = {
@@ -47,7 +47,7 @@ def test_create_user_failure():
 def test_search_user():
 
     # GET /users/{id}
-    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f) 
     
     res = api.client.send_request(method="get",
@@ -78,7 +78,7 @@ def test_update_user():
 
     # PUT /users/{id}
     # 1. check the gender
-    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f) 
 
     old_gender = data_json['gender']
@@ -107,7 +107,7 @@ def test_update_user():
 def test_update_user_failure():
 
     # invalid gender
-    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f) 
 
     data = { "gender": 'invalid' }
@@ -123,7 +123,7 @@ def test_update_user_failure():
 def test_delete_user():
 
     # DELETE /users/{id}
-    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f) 
 
     res = api.client.send_request(method="delete",
@@ -136,11 +136,11 @@ def test_delete_user():
 def test_delete_user_failure():
 
     # delete deleted user (404)
-    with open(config.settings.FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f) 
 
     res = api.client.send_request(method="delete",
-                                  uri="/public/v2/users"+"/"+str(data_json['id']),
+                                  uri="/public/v2"+"/"+str(data_json['id']),
                                   headers=config.settings.HEADERS,
                                   expected_status=404)
 
