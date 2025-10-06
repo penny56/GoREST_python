@@ -1,5 +1,5 @@
 import api.client
-import config.settings
+import config.consts
 import random, json
 
 def test_lifecycle():

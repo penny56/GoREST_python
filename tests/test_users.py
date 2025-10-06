@@ -1,5 +1,5 @@
 import api.client
-import config.settings
+import config.consts
 import random, json, os
 
 def test_create_user():
@@ -14,19 +14,19 @@ def test_create_user():
 
     res = api.client.send_request(method="post",
                                   uri="/public/v2/users",
-                                  headers=config.settings.HEADERS,
+                                  headers=config.consts.HEADERS,
                                   body=data,
                                   expected_status=201)
     print("\ntest_create_user passed, user id is:", str(json.loads(res.text)['id']))
 
     # get current dir
-    with open(config.settings.USER_FILE_PATH, "w", encoding="utf-8") as f:
+    with open(config.consts.USER_FILE_PATH, "w", encoding="utf-8") as f:
         f.write(res.text)
 
 def test_create_user_failure():
 
     # duplicated email
-    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
         email = json.loads(f.read())['email']
     
     data = {
@@ -38,7 +38,7 @@ def test_create_user_failure():
     
     res = api.client.send_request(method="post",
                                   uri="/public/v2/users",
-                                  headers=config.settings.HEADERS,
+                                  headers=config.consts.HEADERS,
                                   body=data,
                                   expected_status=422)
     
@@ -47,12 +47,12 @@ def test_create_user_failure():
 def test_search_user():
 
     # GET /users/{id}
-    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f) 
     
     res = api.client.send_request(method="get",
                                   uri="/public/v2/users"+"/"+str(data_json['id']),
-                                  headers=config.settings.HEADERS,
+                                  headers=config.consts.HEADERS,
                                   expected_status=200)
 
     data_res = json.loads(res.text)
@@ -69,7 +69,7 @@ def test_search_user_failure():
     # un-existing uid
     res = api.client.send_request(method="get",
                                   uri="/public/v2/users"+"/"+str(random.randint(10000, 99999)),
-                                  headers=config.settings.HEADERS,
+                                  headers=config.consts.HEADERS,
                                   expected_status=404)
     
     print("test_search_user_failure passed!")
@@ -78,7 +78,7 @@ def test_update_user():
 
     # PUT /users/{id}
     # 1. check the gender
-    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f) 
 
     old_gender = data_json['gender']
@@ -93,7 +93,7 @@ def test_update_user():
 
     res = api.client.send_request(method="put",
                                   uri="/public/v2/users"+"/"+str(data_json['id']),
-                                  headers=config.settings.HEADERS,
+                                  headers=config.consts.HEADERS,
                                   body=data,
                                   expected_status=200)    
 
@@ -107,14 +107,14 @@ def test_update_user():
 def test_update_user_failure():
 
     # invalid gender
-    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f) 
 
     data = { "gender": 'invalid' }
 
     res = api.client.send_request(method="put",
                                   uri="/public/v2/users"+"/"+str(data_json['id']),
-                                  headers=config.settings.HEADERS,
+                                  headers=config.consts.HEADERS,
                                   body=data,
                                   expected_status=422)    
 
@@ -123,12 +123,12 @@ def test_update_user_failure():
 def test_delete_user():
 
     # DELETE /users/{id}
-    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f) 
 
     res = api.client.send_request(method="delete",
                                   uri="/public/v2/users"+"/"+str(data_json['id']),
-                                  headers=config.settings.HEADERS,
+                                  headers=config.consts.HEADERS,
                                   expected_status=204)
 
     print(f"test_delete_user passed! id: {data_json['id']}")
@@ -136,12 +136,12 @@ def test_delete_user():
 def test_delete_user_failure():
 
     # delete deleted user (404)
-    with open(config.settings.USER_FILE_PATH, "r", encoding="utf-8") as f:
+    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
         data_json = json.load(f) 
 
     res = api.client.send_request(method="delete",
                                   uri="/public/v2"+"/"+str(data_json['id']),
-                                  headers=config.settings.HEADERS,
+                                  headers=config.consts.HEADERS,
                                   expected_status=404)
 
     print(f"test_delete_user_failure passed!")

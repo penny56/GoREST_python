@@ -1,6 +1,6 @@
 import requests
 import urllib3
-from config.settings import BASE_URL
+from config.consts import BASE_URL
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
