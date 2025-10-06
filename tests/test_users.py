@@ -67,7 +67,12 @@ def test_search_user():
 def test_search_user_failure():
 
     # un-existing uid
-    pass
+    res = api.client.send_request(method="get",
+                                  uri="/public/v2/users"+"/"+str(random.randint(10000, 99999)),
+                                  headers=config.settings.HEADERS,
+                                  expected_status=404)
+    
+    print("test_search_user_failure passed!")
 
 def test_update_user():
 
