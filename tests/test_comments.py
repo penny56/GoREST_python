@@ -1,6 +1,6 @@
 import api.client
 import config.consts
-import random, json
+import json
 
 def test_create_comment():
 
