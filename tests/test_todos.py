@@ -32,15 +32,54 @@ def test_create_todo():
 def test_create_todo_status():
 
     # status = 'done' (invalid)
-    pass
+    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
+        user_json = json.loads(f.read())
+
+    todo_json_done = {
+        "title": "todo title",
+        "due_on": datetime.now().isoformat(),
+        "status": "done"
+    }
+
+    res = api.client.send_request(method="post",
+                                  uri="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
+                                  headers=config.consts.HEADERS,
+                                  body=todo_json_done,
+                                  expected_status=422)
+
+    print("\ntest_create_todo_status passed!")
 
 def test_list_todos():
 
     # GET /users/{id}/todos
-    pass
+    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
+        user_json = json.loads(f.read())
+
+    res = api.client.send_request(method="get",
+                                  uri="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
+                                  headers=config.consts.HEADERS,
+                                  expected_status=200)
+
+    todos = json.loads(res.text)
+
+    for todo in todos:
+        print(f"todo id: {todo['id']}, body: {todo['title']}")
 
 def test_update_todos():
     
     # PATCH /todos/{id}
     # from 'pending' to 'completed'
-    pass
+    with open(config.consts.TODO_FILE_PATH, "r", encoding="utf-8") as f:
+        todo_json = json.loads(f.read())
+
+    todo_data = {
+        "status": "completed"
+    }
+
+    res = api.client.send_request(method="patch",
+                                  uri="/public/v2"+"/"+"todos"+"/"+str(todo_json["id"]),
+                                  headers=config.consts.HEADERS,
+                                  body=todo_data,
+                                  expected_status=200)
+
+    print("\ntest_update_todos passed!")
