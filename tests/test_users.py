@@ -1,6 +1,9 @@
 import api.client
 import config.consts
-import random, json, os
+import random, json
+
+# for the skip test cases
+import pytest
 
 def test_create_user():
 
@@ -120,6 +123,7 @@ def test_update_user_failure():
 
     print('test_update_user_failure passed!')
 
+@pytest.mark.skip(reason="user should be used later, skip the deletion.")
 def test_delete_user():
 
     # DELETE /users/{id}
@@ -133,6 +137,7 @@ def test_delete_user():
 
     print(f"test_delete_user passed! id: {data_json['id']}")
 
+@pytest.mark.skip(reason="user should be used later, skip the deletion.")
 def test_delete_user_failure():
 
     # delete deleted user (404)

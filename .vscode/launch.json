@@ -27,6 +27,14 @@
             "module": "pytest",
             "args": [ "-s", ".\\tests\\test_comments.py" ],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "todos",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [ "-s", ".\\tests\\test_todos.py" ],
+            "console": "integratedTerminal"
         }
 
     ]
