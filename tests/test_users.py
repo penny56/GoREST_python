@@ -16,9 +16,9 @@ def test_create_user():
     }
 
     res = api.client.send_request(method="post",
-                                  uri="/public/v2/users",
-                                  headers=config.consts.HEADERS,
-                                  body=data,
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  json=data,
                                   expected_status=201)
     print("\ntest_create_user passed, user id is:", str(json.loads(res.text)['id']))
 
@@ -40,9 +40,9 @@ def test_create_user_failure():
     }
     
     res = api.client.send_request(method="post",
-                                  uri="/public/v2/users",
-                                  headers=config.consts.HEADERS,
-                                  body=data,
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  json=data,
                                   expected_status=422)
     
     print("test_create_user_failure passed!")
@@ -54,8 +54,8 @@ def test_search_user():
         data_json = json.load(f) 
     
     res = api.client.send_request(method="get",
-                                  uri="/public/v2/users"+"/"+str(data_json['id']),
-                                  headers=config.consts.HEADERS,
+                                  path="/public/v2/users"+"/"+str(data_json['id']),
+                                  headers=config.consts.TOKEN,
                                   expected_status=200)
 
     data_res = json.loads(res.text)
@@ -71,8 +71,8 @@ def test_search_user_failure():
 
     # un-existing uid
     res = api.client.send_request(method="get",
-                                  uri="/public/v2/users"+"/"+str(random.randint(10000, 99999)),
-                                  headers=config.consts.HEADERS,
+                                  path="/public/v2/users"+"/"+str(random.randint(10000, 99999)),
+                                  headers=config.consts.TOKEN,
                                   expected_status=404)
     
     print("test_search_user_failure passed!")
@@ -95,9 +95,9 @@ def test_update_user():
     data = { "gender": new_gender }
 
     res = api.client.send_request(method="put",
-                                  uri="/public/v2/users"+"/"+str(data_json['id']),
-                                  headers=config.consts.HEADERS,
-                                  body=data,
+                                  path="/public/v2/users"+"/"+str(data_json['id']),
+                                  headers=config.consts.TOKEN,
+                                  json=data,
                                   expected_status=200)    
 
     # 3. confirm the change
@@ -116,9 +116,9 @@ def test_update_user_failure():
     data = { "gender": 'invalid' }
 
     res = api.client.send_request(method="put",
-                                  uri="/public/v2/users"+"/"+str(data_json['id']),
-                                  headers=config.consts.HEADERS,
-                                  body=data,
+                                  path="/public/v2/users"+"/"+str(data_json['id']),
+                                  headers=config.consts.TOKEN,
+                                  json=data,
                                   expected_status=422)    
 
     print('test_update_user_failure passed!')
@@ -131,8 +131,8 @@ def test_delete_user():
         data_json = json.load(f) 
 
     res = api.client.send_request(method="delete",
-                                  uri="/public/v2/users"+"/"+str(data_json['id']),
-                                  headers=config.consts.HEADERS,
+                                  path="/public/v2/users"+"/"+str(data_json['id']),
+                                  headers=config.consts.TOKEN,
                                   expected_status=204)
 
     print(f"test_delete_user passed! id: {data_json['id']}")
@@ -145,8 +145,8 @@ def test_delete_user_failure():
         data_json = json.load(f) 
 
     res = api.client.send_request(method="delete",
-                                  uri="/public/v2"+"/"+str(data_json['id']),
-                                  headers=config.consts.HEADERS,
+                                  path="/public/v2"+"/"+str(data_json['id']),
+                                  headers=config.consts.TOKEN,
                                   expected_status=404)
 
     print(f"test_delete_user_failure passed!")

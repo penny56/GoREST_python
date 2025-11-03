@@ -18,9 +18,9 @@ def test_create_todo():
     }
 
     res = api.client.send_request(method="post",
-                                  uri="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
-                                  headers=config.consts.HEADERS,
-                                  body=todo_json,
+                                  path="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
+                                  headers=config.consts.TOKEN,
+                                  json=todo_json,
                                   expected_status=201)
 
     print("\ntest_create_todo passed, todo id is:", str(json.loads(res.text)['id']))
@@ -42,9 +42,9 @@ def test_create_todo_status():
     }
 
     res = api.client.send_request(method="post",
-                                  uri="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
-                                  headers=config.consts.HEADERS,
-                                  body=todo_json_done,
+                                  path="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
+                                  headers=config.consts.TOKEN,
+                                  json=todo_json_done,
                                   expected_status=422)
 
     print("\ntest_create_todo_status passed!")
@@ -56,14 +56,14 @@ def test_list_todos():
         user_json = json.loads(f.read())
 
     res = api.client.send_request(method="get",
-                                  uri="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
-                                  headers=config.consts.HEADERS,
+                                  path="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
+                                  headers=config.consts.TOKEN,
                                   expected_status=200)
 
     todos = json.loads(res.text)
 
     for todo in todos:
-        print(f"todo id: {todo['id']}, body: {todo['title']}")
+        print(f"todo id: {todo['id']}, json: {todo['title']}")
 
 def test_update_todos():
     
@@ -77,9 +77,9 @@ def test_update_todos():
     }
 
     res = api.client.send_request(method="patch",
-                                  uri="/public/v2"+"/"+"todos"+"/"+str(todo_json["id"]),
-                                  headers=config.consts.HEADERS,
-                                  body=todo_data,
+                                  path="/public/v2"+"/"+"todos"+"/"+str(todo_json["id"]),
+                                  headers=config.consts.TOKEN,
+                                  json=todo_data,
                                   expected_status=200)
 
     print("\ntest_update_todos passed!")

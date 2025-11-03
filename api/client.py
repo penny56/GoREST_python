@@ -5,19 +5,19 @@ from config.consts import BASE_URL
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def send_request(method: str,
-                 uri: str,
+                 path: str,
                  headers: dict = None,
-                 body: dict = None,
+                 json: dict = None,
                  params: dict = None,
                  expected_status: int = None):
 
-    url = f"{BASE_URL}{uri}"
+    url = f"{BASE_URL}{path}"
     
     response = requests.request(
         method=method.upper(),
         url=url,
         headers=headers,
-        json=body,
+        json=json,
         params=params,
         verify=False            # turn off SSL verification
     )

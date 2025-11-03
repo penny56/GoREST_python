@@ -15,9 +15,9 @@ def test_create_post():
     }
 
     res = api.client.send_request(method="post",
-                                  uri="/public/v2/users",
-                                  headers=config.consts.HEADERS,
-                                  body=data,
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  json=data,
                                   expected_status=201)
     print("Created a user, id:", str(json.loads(res.text)['id']))
 
@@ -33,9 +33,9 @@ def test_create_post():
     }
 
     res = api.client.send_request(method="post",
-                                  uri="/public/v2/users"+"/"+str(json.loads(res.text)['id'])+"/"+"posts",
-                                  headers=config.consts.HEADERS,
-                                  body=data,
+                                  path="/public/v2/users"+"/"+str(json.loads(res.text)['id'])+"/"+"posts",
+                                  headers=config.consts.TOKEN,
+                                  json=data,
                                   expected_status=201)
     
     with open(config.consts.POST_FILE_PATH, "w", encoding="utf-8") as f:
@@ -49,13 +49,13 @@ def test_create_post_failure():
     data = {
         "user_id": str(random.randint(1000000, 9999999)),
         "title": "This is the post title",
-        "body": "This is the post content, hi there!"
+        "json": "This is the post content, hi there!"
     }
 
     res = api.client.send_request(method="post",
-                                  uri="/public/v2/users"+"/"+str(random.randint(1000000, 9999999))+"/"+"posts",
-                                  headers=config.consts.HEADERS,
-                                  body=data,
+                                  path="/public/v2/users"+"/"+str(random.randint(1000000, 9999999))+"/"+"posts",
+                                  headers=config.consts.TOKEN,
+                                  json=data,
                                   expected_status=422)
     
     print("test_create_post passed!")
@@ -67,8 +67,8 @@ def test_list_posts_by_user():
         data_json = json.load(f)
     
     res = api.client.send_request(method="get",
-                                  uri="/public/v2/users"+"/"+str(data_json['id'])+"/"+"posts",
-                                  headers=config.consts.HEADERS,
+                                  path="/public/v2/users"+"/"+str(data_json['id'])+"/"+"posts",
+                                  headers=config.consts.TOKEN,
                                   expected_status=200)
     
     for text in json.loads(res.text):
@@ -83,8 +83,8 @@ def test_get_post_details():
         data_json = json.load(f)
     
     res = api.client.send_request(method="get",
-                                  uri="/public/v2"+"/"+"posts"+"/"+str(data_json['id']),
-                                  headers=config.consts.HEADERS,
+                                  path="/public/v2"+"/"+"posts"+"/"+str(data_json['id']),
+                                  headers=config.consts.TOKEN,
                                   expected_status=200)
     
     print(f"Post details: {data_json}")
