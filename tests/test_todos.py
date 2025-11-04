@@ -9,18 +9,18 @@ def test_create_todo():
     # POST /users/{id}/todos
     # status = 'pending' or 'completed'
     with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_json = json.loads(f.read())
+        user_dict = json.loads(f.read())
 
-    todo_json = {
+    todo_dict = {
         "title": "todo title",
         "due_on": datetime.now().isoformat(),
         "status": "pending"
     }
 
     res = api.client.send_request(method="post",
-                                  path="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
+                                  path="/public/v2"+"/"+"users"+"/"+str(user_dict["id"])+"/"+"todos",
                                   headers=config.consts.TOKEN,
-                                  json=todo_json,
+                                  json=todo_dict,
                                   expected_status=201)
 
     print("\ntest_create_todo passed, todo id is:", str(json.loads(res.text)['id']))
@@ -33,18 +33,18 @@ def test_create_todo_status():
 
     # status = 'done' (invalid)
     with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_json = json.loads(f.read())
+        user_dict = json.load(f)
 
-    todo_json_done = {
+    todo_done_dict = {
         "title": "todo title",
         "due_on": datetime.now().isoformat(),
         "status": "done"
     }
 
     res = api.client.send_request(method="post",
-                                  path="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
+                                  path="/public/v2"+"/"+"users"+"/"+str(user_dict["id"])+"/"+"todos",
                                   headers=config.consts.TOKEN,
-                                  json=todo_json_done,
+                                  json=todo_done_dict,
                                   expected_status=422)
 
     print("\ntest_create_todo_status passed!")
@@ -53,7 +53,7 @@ def test_list_todos():
 
     # GET /users/{id}/todos
     with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_json = json.loads(f.read())
+        user_json = json.load(f)
 
     res = api.client.send_request(method="get",
                                   path="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
@@ -70,16 +70,16 @@ def test_update_todos():
     # PATCH /todos/{id}
     # from 'pending' to 'completed'
     with open(config.consts.TODO_FILE_PATH, "r", encoding="utf-8") as f:
-        todo_json = json.loads(f.read())
+        todo_pending_dict = json.loads(f.read())
 
-    todo_data = {
+    todo_completed_dict = {
         "status": "completed"
     }
 
     res = api.client.send_request(method="patch",
-                                  path="/public/v2"+"/"+"todos"+"/"+str(todo_json["id"]),
+                                  path="/public/v2"+"/"+"todos"+"/"+str(todo_pending_dict["id"]),
                                   headers=config.consts.TOKEN,
-                                  json=todo_data,
+                                  json=todo_completed_dict,
                                   expected_status=200)
 
     print("\ntest_update_todos passed!")
