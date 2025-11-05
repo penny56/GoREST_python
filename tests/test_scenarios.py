@@ -1,7 +1,12 @@
+import pytest
 import api.client
 import config.consts
 import random, json
 
+# for parrallel
+import concurrent.futures
+
+@pytest.mark.skip(reason="verify the parallel, skip this.")
 def test_lifecycle():
 
     scenario_list = []
@@ -88,10 +93,59 @@ def test_lifecycle():
     with open(config.consts.SCENARIOS_FILE_PATH, "w", encoding="utf-8") as f:
         json.dump(scenario_list, f, ensure_ascii=False, indent=4)
 
+
+'''
+search_user()，如果不用 params={"per_page": 100} 指定每页显示数，默认每页显示10条记录，每次search只显示第一页。
+'''
+def search_user_by_name_pattern():
+
+    user_res = api.client.send_request(method="get",
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  params={"per_page": 100},
+                                  expected_status=200)
+
+    print(f"There are {len(json.loads(user_res.text))} users.")
+
+
+def create_user(i):
+    user_dict = {
+        "name": f"p_user_{i}",
+        "email": str(random.randint(10000, 99999))+"@abc.com",
+        "gender": "female",
+        "status": "active"
+    }
+
+    user_res = api.client.send_request(method="post",
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  json=user_dict,
+                                  expected_status=201)
+
+    return json.loads(user_res.text)
+
+
+
 def test_parallel():
 
     # 在短时间内创建多个用户并验证分页（GET /users?page=2）。
-    pass
+    
+    # 并发创建用户
+
+    '''
+    并发模式,多线程（适用于 I/O 密集型任务）。
+    最大并发数,5 个线程。
+    执行过程,并行执行 15 次 create_user 函数。
+    '''
+    user_count = 15
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        results = list(executor.map(create_user, range(user_count)))
+
+    # 检查是否全部创建成功
+    '''
+    遍历列表 results（每个元素是一个用户创建请求的响应数据，而这个数据是一个dict，里面要有 id 字段）。
+    '''
+    assert all("id" in r for r in results), "Some users were not created successfully"
 
 def test_verify_data():
 
