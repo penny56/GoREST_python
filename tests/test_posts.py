@@ -21,9 +21,10 @@ def test_create_post():
                                   headers=config.consts.TOKEN,
                                   json=post_dict,
                                   expected_status=201)
+    res_dict = json.loads(res.text)
     
     with open(config.consts.POST_FILE_PATH, "w", encoding="utf-8") as f:
-        f.write(res.text)
+        json.dump(res_dict, f, ensure_ascii=False, indent=4)
     
     print("test_create_post passed!")
 

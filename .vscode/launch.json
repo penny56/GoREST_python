@@ -35,6 +35,14 @@
             "module": "pytest",
             "args": [ "-s", ".\\tests\\test_todos.py" ],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "scenarios",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [ "-s", ".\\tests\\test_scenarios.py" ],
+            "console": "integratedTerminal"
         }
 
     ]

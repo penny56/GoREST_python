@@ -9,3 +9,5 @@ USER_FILE_PATH = os.path.join(ROOT_DIR, "user_info.json")
 POST_FILE_PATH = os.path.join(ROOT_DIR, "post_info.json")
 COMMENT_FILE_PATH = os.path.join(ROOT_DIR, "comment_info.json")
 TODO_FILE_PATH = os.path.join(ROOT_DIR, "todo_info.json")
+
+SCENARIOS_FILE_PATH = os.path.join(ROOT_DIR, "scenarios_info.json")

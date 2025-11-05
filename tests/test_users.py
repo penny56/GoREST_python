@@ -20,11 +20,13 @@ def test_create_user():
                                   headers=config.consts.TOKEN,
                                   json=user_dict,
                                   expected_status=201)
-    print("\ntest_create_user passed, user id is:", str(json.loads(res.text)['id']))
+    res_dict = json.loads(res.text)
+    
+    print("\ntest_create_user passed, user id is: ", res_dict['id'])
 
     # write to user.json
     with open(config.consts.USER_FILE_PATH, "w", encoding="utf-8") as f:
-        f.write(res.text)
+        json.dump(res_dict, f, ensure_ascii=False, indent=4)
 
 def test_create_user_failure():
 

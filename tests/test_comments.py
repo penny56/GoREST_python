@@ -20,12 +20,13 @@ def test_create_comment():
                                   headers=config.consts.TOKEN,
                                   json=comment_dict,
                                   expected_status=201)
+    res_dict = json.loads(res.text)
 
-    print("\ntest_create_comment passed, comment id is:", str(json.loads(res.text)['id']))
+    print("\ntest_create_comment passed, comment id is:", res_dict['id'])
 
     # get current dir
     with open(config.consts.COMMENT_FILE_PATH, "w", encoding="utf-8") as f:
-        f.write(res.text)
+        json.dump(res_dict, f, ensure_ascii=False, indent=4)
 
 def test_create_comment_failure():
 
