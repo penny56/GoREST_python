@@ -147,6 +147,12 @@ def test_parallel():
     '''
     assert all("id" in r for r in results), "Some users were not created successfully"
 
+    page2_user_res = api.client.send_request(method="get",
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  params={"per_page": 100, "page": 2},
+                                  expected_status=200)
+    
 def test_verify_data():
 
     # 检查每个接口返回的字段结构（JSON schema validation）。
