@@ -15,12 +15,3 @@ jobs:
           cd /home/ubuntu/jmeter
           ./GoREST.sh
         shell: bash
-
-      - name: Upload JMeter Results        # 把结果上传到 GitHub Actions 页面
-        uses: actions/upload-artifact@v3
-        with:
-          name: jmeter-results
-          path: /home/ubuntu/jmeter/results/*
-          
-      - name: Confirm script finished
-        run: echo "JMeter script executed successfully"
