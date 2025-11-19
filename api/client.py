@@ -28,7 +28,8 @@ def send_request(method: str,
 
     if expected_status is not None:
         assert response.status_code == expected_status, (
-            f"Expected {expected_status}, got {response.status_code}. "
-            f"Response: {response.text}"
+            f"Expected {expected_status}, got {response.status_code}. \n"
+            f"Response Reason: {response.reason}. \n"
+            f"Response Text: {response.text[:100]}. \n"
         )
     return response
