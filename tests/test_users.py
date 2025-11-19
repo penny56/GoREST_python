@@ -5,73 +5,83 @@ import random, json
 # for the skip test cases
 import pytest
 
-def test_create_user():
+@pytest.fixture
+def user_dict():
 
-    # POST /users
-    user_dict = {
+    return {
         "name": "username",
         "email": str(random.randint(10000, 99999))+"@abc.com",
         "gender": "female",
         "status": "active"
     }
 
+def test_create_user(user_dict):
+
+    # POST /users
     res = api.client.send_request(method="post",
                                   path="/public/v2/users",
                                   headers=config.consts.TOKEN,
                                   json=user_dict,
                                   expected_status=201)
+    assert res.status_code == 201
+    
     res_dict = json.loads(res.text)
     
     print("\ntest_create_user passed, user id is: ", res_dict['id'])
 
-    # write to user.json
-    with open(config.consts.USER_FILE_PATH, "w", encoding="utf-8") as f:
-        json.dump(res_dict, f, ensure_ascii=False, indent=4)
+def test_create_user_failure(user_dict):
 
-def test_create_user_failure():
+    # failure reason: duplicated email
 
-    # duplicated email
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        email = json.loads(f.read())['email']
-    
-    user_dup_email_dict = {
-        "name": "username",
-        "email": email,
-        "gender": "female",
-        "status": "active"
-    }
-    
+    # create a user
     res = api.client.send_request(method="post",
                                   path="/public/v2/users",
                                   headers=config.consts.TOKEN,
-                                  json=user_dup_email_dict,
+                                  json=user_dict,
+                                  expected_status=201)
+    assert res.status_code == 201
+
+    # create another user, re-use the email (without update the user_dict)
+    res = api.client.send_request(method="post",
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  json=user_dict,
                                   expected_status=422)
-    
+    assert res.status_code == 422
+
     print("test_create_user_failure passed!")
 
-def test_search_user():
+def test_search_user(user_dict):
 
     # GET /users/{id}
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_dict = json.load(f)
-    
-    res = api.client.send_request(method="get",
-                                  path="/public/v2/users"+"/"+str(user_dict['id']),
+
+    # create a user
+    create_res = api.client.send_request(method="post",
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  json=user_dict,
+                                  expected_status=201)
+    assert create_res.status_code == 201
+
+    create_res_dict = json.loads(create_res.text)
+
+    search_res = api.client.send_request(method="get",
+                                  path="/public/v2/users"+"/"+str(create_res_dict['id']),
                                   headers=config.consts.TOKEN,
                                   expected_status=200)
+    assert search_res.status_code == 200
 
-    data_res = json.loads(res.text)
+    search_res_dict = json.loads(search_res.text)
 
-    assert user_dict['name'] == data_res['name'] and user_dict['email'] == data_res['email'] and user_dict['gender'] == data_res['gender'] and user_dict['status'] == data_res['status'], (
-        f"{res.text}"
+    assert create_res_dict['name'] == search_res_dict['name'] and create_res_dict['email'] == search_res_dict['email'] and create_res_dict['gender'] == search_res_dict['gender'] and create_res_dict['status'] == search_res_dict['status'], (
+        f"{search_res.text}"
     )
 
     print("test_search_user passed!")
 
-
 def test_search_user_failure():
 
-    # un-existing uid
+    # failure reason: search random un-existing uid
     res = api.client.send_request(method="get",
                                   path="/public/v2/users"+"/"+str(random.randint(10000, 99999)),
                                   headers=config.consts.TOKEN,
@@ -79,16 +89,24 @@ def test_search_user_failure():
     
     print("test_search_user_failure passed!")
 
-def test_update_user():
+def test_update_user(user_dict):
 
     # PUT /users/{id}
-    # 1. check the gender
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_dict = json.load(f) 
 
-    old_gender = user_dict['gender']
+    # create a user
+    create_res = api.client.send_request(method="post",
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  json=user_dict,
+                                  expected_status=201)
+    assert create_res.status_code == 201
 
-    # 2. update
+    create_res_dict = json.loads(create_res.text)
+
+    # check the gender
+    old_gender = create_res_dict['gender']
+
+    # update
     if old_gender == 'male':
         new_gender = 'female'
     else:
@@ -96,59 +114,77 @@ def test_update_user():
 
     gender_data = { "gender": new_gender }
 
-    res = api.client.send_request(method="put",
-                                  path="/public/v2/users"+"/"+str(user_dict['id']),
+    update_res = api.client.send_request(method="put",
+                                  path="/public/v2/users"+"/"+str(create_res_dict['id']),
                                   headers=config.consts.TOKEN,
                                   json=gender_data,
-                                  expected_status=200)    
+                                  expected_status=200) 
+    assert update_res.status_code == 200   
 
     # 3. confirm the change
-    assert json.loads(res.text)['gender'] == new_gender, (
-        f"{res.text}"
+    assert json.loads(update_res.text)['gender'] == new_gender, (
+        f"{update_res.text}"
     )
 
     print('test_update_user passed!')
 
-def test_update_user_failure():
+def test_update_user_failure(user_dict):
 
     # invalid gender
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_dict = json.load(f) 
+
+    # create a user
+    create_res = api.client.send_request(method="post",
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  json=user_dict,
+                                  expected_status=201)
+    assert create_res.status_code == 201
+
+    create_res_dict = json.loads(create_res.text)
 
     invalid_data = { "gender": 'invalid' }
 
-    res = api.client.send_request(method="put",
-                                  path="/public/v2/users"+"/"+str(user_dict['id']),
+    update_res = api.client.send_request(method="put",
+                                  path="/public/v2/users"+"/"+str(create_res_dict['id']),
                                   headers=config.consts.TOKEN,
                                   json=invalid_data,
-                                  expected_status=422)    
+                                  expected_status=422)
+    assert update_res.status_code == 422
 
     print('test_update_user_failure passed!')
 
-@pytest.mark.skip(reason="user should be used later, skip the deletion.")
-def test_delete_user():
+def test_delete_user(user_dict):
 
     # DELETE /users/{id}
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_dict = json.load(f) 
 
-    res = api.client.send_request(method="delete",
-                                  path="/public/v2/users"+"/"+str(user_dict['id']),
+    # create a user
+    create_res = api.client.send_request(method="post",
+                                  path="/public/v2/users",
+                                  headers=config.consts.TOKEN,
+                                  json=user_dict,
+                                  expected_status=201)
+    assert create_res.status_code == 201
+
+    create_res_dict = json.loads(create_res.text)
+
+    delete_res = api.client.send_request(method="delete",
+                                  path="/public/v2/users"+"/"+str(create_res_dict['id']),
                                   headers=config.consts.TOKEN,
                                   expected_status=204)
+    assert delete_res.status_code == 204
 
-    print(f"test_delete_user passed! id: {user_dict['id']}")
+    print(f"test_delete_user passed! id: {create_res_dict['id']}")
 
-@pytest.mark.skip(reason="user should be used later, skip the deletion.")
 def test_delete_user_failure():
 
-    # delete deleted user (404)
+    # failure reason: delete a non-exist user (404)
     with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
         user_dict = json.load(f) 
 
-    res = api.client.send_request(method="delete",
-                                  path="/public/v2"+"/"+str(user_dict['id']),
+    delete_res = api.client.send_request(method="delete",
+                                  path="/public/v2"+"/"+str(random.randint(10000, 99999)),
                                   headers=config.consts.TOKEN,
                                   expected_status=404)
+    assert delete_res.status_code == 404
 
     print(f"test_delete_user_failure passed!")

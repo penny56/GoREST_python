@@ -26,6 +26,7 @@ def send_request(method: str,
         verify=False            # turn off SSL verification
     )
 
+    # FYI：这里，如果带有 expected_status 的情况下，会判断一下，但是这种情况下，caller如果也有assert，会卡在这里，那边其实就没有用了
     if expected_status is not None:
         assert response.status_code == expected_status, (
             f"Expected {expected_status}, got {response.status_code}. \n"
