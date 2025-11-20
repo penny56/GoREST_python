@@ -1,77 +1,75 @@
 import api.client
-import config.consts
 import random, json
 
-def test_create_post():
+def test_create_post(post_dict):
 
     # POST /users/{id}/posts
 
-    # user the existing user id
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_dict = json.load(f)  
-
-    post_dict = {
-        "user_id": str(user_dict['id']),
-        "title": "This is the post title",
-        "body": "This is the post content, hi there!"
-    }
-
-    res = api.client.send_request(method="post",
-                                  path="/public/v2/users"+"/"+str(user_dict['id'])+"/"+"posts",
-                                  headers=config.consts.TOKEN,
+    post_res = api.client.send_request(method="post",
+                                  path="/public/v2/users"+"/"+str(post_dict['user_id'])+"/"+"posts",
                                   json=post_dict,
                                   expected_status=201)
-    res_dict = json.loads(res.text)
-    
-    with open(config.consts.POST_FILE_PATH, "w", encoding="utf-8") as f:
-        json.dump(res_dict, f, ensure_ascii=False, indent=4)
+    assert post_res.status_code == 201
     
     print("test_create_post passed!")
 
-def test_create_post_failure():
+def test_create_post_failure(post_dict):
 
     # create posts with un-exist user (404)
-    random_uid_post_data = {
-        "user_id": str(random.randint(1000000, 9999999)),
-        "title": "This is the post title",
-        "json": "This is the post content, hi there!"
-    }
 
-    res = api.client.send_request(method="post",
+    # the path include a random user_id and the json is a real post_dict
+    failed_post_res = api.client.send_request(method="post",
                                   path="/public/v2/users"+"/"+str(random.randint(1000000, 9999999))+"/"+"posts",
-                                  headers=config.consts.TOKEN,
-                                  json=random_uid_post_data,
+                                  json=post_dict,
                                   expected_status=422)
+    failed_post_res.status_code == 422
     
-    print("test_create_post passed!")
+    print("test_create_post_failure passed!")
 
-def test_list_posts_by_user():
+def test_list_posts_by_user(post_dict):
 
     # GET /users/{id}/posts
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_dict = json.load(f)
-    
-    res = api.client.send_request(method="get",
-                                  path="/public/v2/users"+"/"+str(user_dict['id'])+"/"+"posts",
-                                  headers=config.consts.TOKEN,
+
+    # 1. create a post
+    post_res = api.client.send_request(method="post",
+                                  path="/public/v2/users"+"/"+str(post_dict['user_id'])+"/"+"posts",
+                                  json=post_dict,
+                                  expected_status=201)
+    assert post_res.status_code == 201
+
+    # 2. list the posts from the user
+    post_res = api.client.send_request(method="get",
+                                  path="/public/v2/users"+"/"+str(post_dict['user_id'])+"/"+"posts",
                                   expected_status=200)
+    assert post_res.status_code == 200
     
-    for text in json.loads(res.text):
+    assert len(json.loads(post_res.text)) == 1
+    
+    for text in json.loads(post_res.text):
         print("Title: ", {text['title']})
     
     print("test_list_posts_by_user passed!")
 
-def test_get_post_details():
+def test_get_post_details(post_dict):
 
     # GET /posts/{id}
-    with open(config.consts.POST_FILE_PATH, "r", encoding="utf-8") as f:
-        post_dict = json.load(f)
+
+    # 1. create a post
+    post_res = api.client.send_request(method="post",
+                                  path="/public/v2/users"+"/"+str(post_dict['user_id'])+"/"+"posts",
+                                  json=post_dict,
+                                  expected_status=201)
+    assert post_res.status_code == 201
+
+    post_res_dict = json.loads(post_res.text)
     
-    res = api.client.send_request(method="get",
-                                  path="/public/v2"+"/"+"posts"+"/"+str(post_dict['id']),
-                                  headers=config.consts.TOKEN,
+    post_details_res = api.client.send_request(method="get",
+                                  path=f"/public/v2/posts/{post_res_dict['id']}",
                                   expected_status=200)
+    assert post_details_res.status_code == 200
     
-    print(f"Post details: {post_dict}")
+    post_details_res_dict = json.loads(post_details_res.text)
+    
+    print(f"Post details: {post_details_res_dict}")
 
     print("test_get_post_details passed!")

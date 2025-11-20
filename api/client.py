@@ -1,8 +1,10 @@
 import requests
 import urllib3
-from config.consts import BASE_URL
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+BASE_URL = "https://gorest.co.in"
+TOKEN = {"Authorization": f"Bearer e7861a22e7bd14084b161ae87e57b4fbbd3213d2ea92f5bfd14a4838fee76b7b"}
 
 '''
 在这里，path需要包含 path parameter，而 query parameters需要以 dict 格式放在 params 参数中。
@@ -16,6 +18,12 @@ def send_request(method: str,
                  expected_status: int = None):
 
     url = f"{BASE_URL}{path}"
+
+    # add thd access token to header
+    if headers is None:
+        headers = TOKEN.copy()
+    else:
+        headers.update(TOKEN)
     
     response = requests.request(
         method=method.upper(),

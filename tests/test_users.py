@@ -1,26 +1,11 @@
 import api.client
-import config.consts
 import random, json
-
-# for the skip test cases
-import pytest
-
-@pytest.fixture
-def user_dict():
-
-    return {
-        "name": "username",
-        "email": str(random.randint(10000, 99999))+"@abc.com",
-        "gender": "female",
-        "status": "active"
-    }
 
 def test_create_user(user_dict):
 
     # POST /users
     res = api.client.send_request(method="post",
                                   path="/public/v2/users",
-                                  headers=config.consts.TOKEN,
                                   json=user_dict,
                                   expected_status=201)
     assert res.status_code == 201
@@ -36,7 +21,6 @@ def test_create_user_failure(user_dict):
     # create a user
     res = api.client.send_request(method="post",
                                   path="/public/v2/users",
-                                  headers=config.consts.TOKEN,
                                   json=user_dict,
                                   expected_status=201)
     assert res.status_code == 201
@@ -44,7 +28,6 @@ def test_create_user_failure(user_dict):
     # create another user, re-use the email (without update the user_dict)
     res = api.client.send_request(method="post",
                                   path="/public/v2/users",
-                                  headers=config.consts.TOKEN,
                                   json=user_dict,
                                   expected_status=422)
     assert res.status_code == 422
@@ -58,7 +41,6 @@ def test_search_user(user_dict):
     # create a user
     create_res = api.client.send_request(method="post",
                                   path="/public/v2/users",
-                                  headers=config.consts.TOKEN,
                                   json=user_dict,
                                   expected_status=201)
     assert create_res.status_code == 201
@@ -67,7 +49,6 @@ def test_search_user(user_dict):
 
     search_res = api.client.send_request(method="get",
                                   path="/public/v2/users"+"/"+str(create_res_dict['id']),
-                                  headers=config.consts.TOKEN,
                                   expected_status=200)
     assert search_res.status_code == 200
 
@@ -84,7 +65,6 @@ def test_search_user_failure():
     # failure reason: search random un-existing uid
     res = api.client.send_request(method="get",
                                   path="/public/v2/users"+"/"+str(random.randint(10000, 99999)),
-                                  headers=config.consts.TOKEN,
                                   expected_status=404)
     
     print("test_search_user_failure passed!")
@@ -96,7 +76,6 @@ def test_update_user(user_dict):
     # create a user
     create_res = api.client.send_request(method="post",
                                   path="/public/v2/users",
-                                  headers=config.consts.TOKEN,
                                   json=user_dict,
                                   expected_status=201)
     assert create_res.status_code == 201
@@ -116,7 +95,6 @@ def test_update_user(user_dict):
 
     update_res = api.client.send_request(method="put",
                                   path="/public/v2/users"+"/"+str(create_res_dict['id']),
-                                  headers=config.consts.TOKEN,
                                   json=gender_data,
                                   expected_status=200) 
     assert update_res.status_code == 200   
@@ -135,7 +113,6 @@ def test_update_user_failure(user_dict):
     # create a user
     create_res = api.client.send_request(method="post",
                                   path="/public/v2/users",
-                                  headers=config.consts.TOKEN,
                                   json=user_dict,
                                   expected_status=201)
     assert create_res.status_code == 201
@@ -146,7 +123,6 @@ def test_update_user_failure(user_dict):
 
     update_res = api.client.send_request(method="put",
                                   path="/public/v2/users"+"/"+str(create_res_dict['id']),
-                                  headers=config.consts.TOKEN,
                                   json=invalid_data,
                                   expected_status=422)
     assert update_res.status_code == 422
@@ -157,10 +133,9 @@ def test_delete_user(user_dict):
 
     # DELETE /users/{id}
 
-    # create a user
+    # 1. create a user
     create_res = api.client.send_request(method="post",
                                   path="/public/v2/users",
-                                  headers=config.consts.TOKEN,
                                   json=user_dict,
                                   expected_status=201)
     assert create_res.status_code == 201
@@ -169,7 +144,6 @@ def test_delete_user(user_dict):
 
     delete_res = api.client.send_request(method="delete",
                                   path="/public/v2/users"+"/"+str(create_res_dict['id']),
-                                  headers=config.consts.TOKEN,
                                   expected_status=204)
     assert delete_res.status_code == 204
 
@@ -178,12 +152,9 @@ def test_delete_user(user_dict):
 def test_delete_user_failure():
 
     # failure reason: delete a non-exist user (404)
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_dict = json.load(f) 
 
     delete_res = api.client.send_request(method="delete",
                                   path="/public/v2"+"/"+str(random.randint(10000, 99999)),
-                                  headers=config.consts.TOKEN,
                                   expected_status=404)
     assert delete_res.status_code == 404
 
