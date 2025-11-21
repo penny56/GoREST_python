@@ -1,0 +1,24 @@
+name: JMeter Test
+
+on:
+  workflow_dispatch:      # 允许手动触发这个 workflow
+
+jobs:
+  jmeter-run:
+    runs-on: [self-hosted, linux, ec2-jmeter]    # 使用 self-hosted 的 runner
+
+    steps:
+      - name: Run JMeter Script
+        run: |
+          cd /home/ubuntu/jmeter
+          ./GoREST.sh
+        shell: bash
+        
+      - name: Upload JMeter Results        # 把结果上传到 GitHub Actions 页面
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmeter-results
+          path: /home/ubuntu/jmeter/results/*
+          
+      - name: Confirm script finished
+        run: echo "JMeter script executed successfully"
