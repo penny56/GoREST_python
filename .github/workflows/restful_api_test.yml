@@ -1,14 +1,14 @@
-name: Python Tests
+name: RESTful API Test
 
 on:
   push:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 1 * * *"       # daily run
   workflow_dispatch:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, ec2-jmeter]    # 使用 self-hosted 的 runner
 
     steps:
       - name: Checkout repository
