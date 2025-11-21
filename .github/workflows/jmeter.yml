@@ -2,7 +2,7 @@ name: Hourly JMeter Test
 
 on:
   schedule:
-    - cron: "0 * * * *"   # UTC 时间每个整点跑，一天24次
+    - cron: "0 0 0 0 0"   # UTC 时间每个整点跑，一天24次
   workflow_dispatch:      # 允许手动触发这个 workflow
 
 jobs:
