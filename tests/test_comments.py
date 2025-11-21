@@ -6,7 +6,7 @@ def test_create_comment(comment_dict):
     # POST /posts/{id}/comments
 
     comment_res = api.client.send_request(method="post",
-                                  path=f"/public/v2/posts/{comment_dict["post_id"]}/comments",
+                                  path=f"/public/v2/posts/{comment_dict['post_id']}/comments",
                                   json=comment_dict,
                                   expected_status=201)
     assert comment_res.status_code == 201
@@ -21,7 +21,7 @@ def test_create_comment_failure(comment_dict):
     del comment_dict['email']
 
     comment_res = api.client.send_request(method="post",
-                                  path=f"/public/v2/posts/{comment_dict["post_id"]}/comments",
+                                  path=f"/public/v2/posts/{comment_dict['post_id']}/comments",
                                   json=comment_dict,
                                   expected_status=422)
     assert comment_res.status_code == 422
@@ -34,7 +34,7 @@ def test_list_comments(comment_dict):
 
     # 1. create a comment
     comment_res = api.client.send_request(method="post",
-                                  path=f"/public/v2/posts/{comment_dict["post_id"]}/comments",
+                                  path=f"/public/v2/posts/{comment_dict['post_id']}/comments",
                                   json=comment_dict,
                                   expected_status=201)
     assert comment_res.status_code == 201
