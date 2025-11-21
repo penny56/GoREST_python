@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: [self-hosted, linux, ec2-jmeter]    # 使用 self-hosted 的 runner
+    runs-on: [self-hosted]    # 使用 self-hosted 的 runner
 
     steps:
       - name: Checkout repository
