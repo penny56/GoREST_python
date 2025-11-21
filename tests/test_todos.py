@@ -68,7 +68,7 @@ def test_update_todos(todo_dict, temp_user):
     todo_dict['status'] = "completed"
 
     updated_todo_res = api.client.send_request(method="patch",
-                                  path=f"/public/v2/todos/{create_todo_res_dict["id"]}",
+                                  path=f"/public/v2/todos/{create_todo_res_dict['id']}",
                                   json=todo_dict,
                                   expected_status=200)
     assert updated_todo_res.status_code == 200

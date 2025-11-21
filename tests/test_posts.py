@@ -6,7 +6,7 @@ def test_create_post(post_dict):
     # POST /users/{id}/posts
 
     post_res = api.client.send_request(method="post",
-                                  path="/public/v2/users"+"/"+str(post_dict['user_id'])+"/"+"posts",
+                                  path=f"/public/v2/users/{post_dict['user_id']}/posts",
                                   json=post_dict,
                                   expected_status=201)
     assert post_res.status_code == 201
@@ -19,7 +19,7 @@ def test_create_post_failure(post_dict):
 
     # the path include a random user_id and the json is a real post_dict
     failed_post_res = api.client.send_request(method="post",
-                                  path="/public/v2/users"+"/"+str(random.randint(1000000, 9999999))+"/"+"posts",
+                                  path=f"/public/v2/users/{random.randint(1000000, 9999999)}/posts",
                                   json=post_dict,
                                   expected_status=422)
     failed_post_res.status_code == 422
@@ -32,14 +32,14 @@ def test_list_posts_by_user(post_dict):
 
     # 1. create a post
     post_res = api.client.send_request(method="post",
-                                  path="/public/v2/users"+"/"+str(post_dict['user_id'])+"/"+"posts",
+                                  path=f"/public/v2/users/{post_dict['user_id']}/posts",
                                   json=post_dict,
                                   expected_status=201)
     assert post_res.status_code == 201
 
     # 2. list the posts from the user
     post_res = api.client.send_request(method="get",
-                                  path="/public/v2/users"+"/"+str(post_dict['user_id'])+"/"+"posts",
+                                  path=f"/public/v2/users/{post_dict['user_id']}/posts",
                                   expected_status=200)
     assert post_res.status_code == 200
     
@@ -56,7 +56,7 @@ def test_get_post_details(post_dict):
 
     # 1. create a post
     post_res = api.client.send_request(method="post",
-                                  path="/public/v2/users"+"/"+str(post_dict['user_id'])+"/"+"posts",
+                                  path=f"/public/v2/users/{post_dict['user_id']}/posts",
                                   json=post_dict,
                                   expected_status=201)
     assert post_res.status_code == 201
@@ -80,7 +80,7 @@ def test_delete_post(post_dict):
 
     # 1. create a post
     post_res = api.client.send_request(method="post",
-                                  path="/public/v2/users"+"/"+str(post_dict['user_id'])+"/"+"posts",
+                                  path=f"/public/v2/users/{post_dict['user_id']}/posts",
                                   json=post_dict,
                                   expected_status=201)
     assert post_res.status_code == 201
