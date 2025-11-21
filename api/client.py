@@ -4,6 +4,12 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 BASE_URL = "https://gorest.co.in"
+BASE_HEADERS = {
+    'Authorization': 'Bearer e7861a22e7bd14084b161ae87e57b4fbbd3213d2ea92f5bfd14a4838fee76b7b',
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'User-Agent': 'Automation-Pytest-Client/1.0 (Testing GoREST)'
+}
 TOKEN = {"Authorization": f"Bearer e7861a22e7bd14084b161ae87e57b4fbbd3213d2ea92f5bfd14a4838fee76b7b"}
 
 '''
@@ -21,9 +27,9 @@ def send_request(method: str,
 
     # add thd access token to header
     if headers is None:
-        headers = TOKEN.copy()
+        headers = BASE_HEADERS.copy()
     else:
-        headers.update(TOKEN)
+        headers.update(BASE_HEADERS)
     
     response = requests.request(
         method=method.upper(),
