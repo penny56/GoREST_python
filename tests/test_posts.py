@@ -73,3 +73,23 @@ def test_get_post_details(post_dict):
     print(f"Post details: {post_details_res_dict}")
 
     print("test_get_post_details passed!")
+
+def test_delete_post(post_dict):
+
+    # DELETE /posts/{id}
+
+    # 1. create a post
+    post_res = api.client.send_request(method="post",
+                                  path="/public/v2/users"+"/"+str(post_dict['user_id'])+"/"+"posts",
+                                  json=post_dict,
+                                  expected_status=201)
+    assert post_res.status_code == 201
+
+    create_post_res = json.loads(post_res.text)
+
+    # 2. delete the post
+    delete_res = api.client.send_request(method="delete",
+                                  path=f"/public/v2/posts/{create_post_res['id']}",
+                                  expected_status=204)
+    assert delete_res.status_code == 204
+

@@ -1,64 +1,53 @@
 import api.client
-import config.consts
 import json
 
-def test_create_comment():
+def test_create_comment(comment_dict):
 
     # POST /posts/{id}/comments
-    with open(config.consts.POST_FILE_PATH, "r", encoding="utf-8") as f:
-        post_dict = json.load(f)
 
-    comment_dict = {
-        "post_id": post_dict['id'],
-        "name": "Matt",
-        "email": "Matt@noreply.com",
-        "body": "This is comment content."
-    }
-
-    res = api.client.send_request(method="post",
-                                  path="/public/v2"+"/"+"posts"+"/"+str(comment_dict["post_id"])+"/"+"comments",
-                                  headers=config.consts.TOKEN,
+    comment_res = api.client.send_request(method="post",
+                                  path=f"/public/v2/posts/{comment_dict["post_id"]}/comments",
                                   json=comment_dict,
                                   expected_status=201)
-    res_dict = json.loads(res.text)
+    assert comment_res.status_code == 201
 
-    print("\ntest_create_comment passed, comment id is:", res_dict['id'])
+    comment_res_dict = json.loads(comment_res.text)
 
-    # get current dir
-    with open(config.consts.COMMENT_FILE_PATH, "w", encoding="utf-8") as f:
-        json.dump(res_dict, f, ensure_ascii=False, indent=4)
+    print("\ntest_create_comment passed, comment id is:", comment_res_dict['id'])
 
-def test_create_comment_failure():
+def test_create_comment_failure(comment_dict):
 
     # miss email or json field
-    with open(config.consts.POST_FILE_PATH, "r", encoding="utf-8") as f:
-        post_dict = json.load(f)
+    del comment_dict['email']
 
-    no_email_comment_dict = {
-        "post_id": post_dict['id'],
-        "name": "Matt",
-        "body": "This is comment content."
-    }
-
-    res = api.client.send_request(method="post",
-                                  path="/public/v2"+"/"+"posts"+"/"+str(post_dict["id"])+"/"+"comments",
-                                  headers=config.consts.TOKEN,
-                                  json=no_email_comment_dict,
+    comment_res = api.client.send_request(method="post",
+                                  path=f"/public/v2/posts/{comment_dict["post_id"]}/comments",
+                                  json=comment_dict,
                                   expected_status=422)
+    assert comment_res.status_code == 422
 
     print("test_create_comment_failure passed")
 
-def test_list_comments():
+def test_list_comments(comment_dict):
 
     # GET /posts/{id}/comments
-    with open(config.consts.POST_FILE_PATH, "r", encoding="utf-8") as f:
-        post_dict = json.load(f)
 
-    res = api.client.send_request(method="get",
-                                  path="/public/v2"+"/"+"posts"+"/"+str(post_dict['id'])+"/"+"comments",
-                                  headers=config.consts.TOKEN,
+    # 1. create a comment
+    comment_res = api.client.send_request(method="post",
+                                  path=f"/public/v2/posts/{comment_dict["post_id"]}/comments",
+                                  json=comment_dict,
+                                  expected_status=201)
+    assert comment_res.status_code == 201
+
+    comment_res_dict = json.loads(comment_res.text)
+
+    # 2. list the comment 
+    comments_res = api.client.send_request(method="get",
+                                  path=f"/public/v2/posts/{comment_res_dict['post_id']}/comments",
                                   expected_status=200)
-    comments = json.loads(res.text)
+    assert comments_res.status_code == 200
+    comments = json.loads(comments_res.text)
+    assert len(comments) == 1
 
     for comment in comments:
         print(f"comment id: {comment['id']}, post id: {comment['post_id']}, body: {comment['body']}")

@@ -1,86 +1,78 @@
 import api.client
-import config.consts
 import json
-from datetime import datetime
 
 
-def test_create_todo():
+def test_create_todo(todo_dict, temp_user):
 
     # POST /users/{id}/todos
     # status = 'pending' or 'completed'
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_dict = json.loads(f.read())
 
-    todo_dict = {
-        "title": "todo title",
-        "due_on": datetime.now().isoformat(),
-        "status": "pending"
-    }
-
-    res = api.client.send_request(method="post",
-                                  path="/public/v2"+"/"+"users"+"/"+str(user_dict["id"])+"/"+"todos",
-                                  headers=config.consts.TOKEN,
+    create_todo_res = api.client.send_request(method="post",
+                                  path=f"/public/v2/users/{temp_user}/todos",
                                   json=todo_dict,
                                   expected_status=201)
-    res_dict = json.loads(res)
+    assert create_todo_res.status_code == 201
+    create_todo_res_dict = json.loads(create_todo_res.text)
 
-    print("\ntest_create_todo passed, todo id is:", res_dict['id'])
+    print("\ntest_create_todo passed, todo id is:", create_todo_res_dict['id'])
 
-    # get current dir
-    with open(config.consts.TODO_FILE_PATH, "w", encoding="utf-8") as f:
-        json.dump(res_dict, f, ensure_ascii=False, indent=4)
+def test_create_todo_status(todo_dict, temp_user):
 
-def test_create_todo_status():
-
-    # status = 'done' (invalid)
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_dict = json.load(f)
-
-    todo_done_dict = {
-        "title": "todo title",
-        "due_on": datetime.now().isoformat(),
-        "status": "done"
-    }
-
-    res = api.client.send_request(method="post",
-                                  path="/public/v2"+"/"+"users"+"/"+str(user_dict["id"])+"/"+"todos",
-                                  headers=config.consts.TOKEN,
-                                  json=todo_done_dict,
+    # status = done, it's an error while create stage
+    todo_dict['status'] = 'done'
+    
+    create_todo_done_res = api.client.send_request(method="post",
+                                  path=f"/public/v2/users/{temp_user}/todos",
+                                  json=todo_dict,
                                   expected_status=422)
+    assert create_todo_done_res.status_code == 422    
 
     print("\ntest_create_todo_status passed!")
 
-def test_list_todos():
+def test_list_todos(todo_dict, temp_user):
 
     # GET /users/{id}/todos
-    with open(config.consts.USER_FILE_PATH, "r", encoding="utf-8") as f:
-        user_json = json.load(f)
 
-    res = api.client.send_request(method="get",
-                                  path="/public/v2"+"/"+"users"+"/"+str(user_json["id"])+"/"+"todos",
-                                  headers=config.consts.TOKEN,
+    # 1. create a todo
+    create_todo_res = api.client.send_request(method="post",
+                                  path=f"/public/v2/users/{temp_user}/todos",
+                                  json=todo_dict,
+                                  expected_status=201)
+    assert create_todo_res.status_code == 201
+
+    # 2. list the todo
+    list_todo_res = api.client.send_request(method="get",
+                                  path=f"/public/v2/users/{temp_user}/todos",
                                   expected_status=200)
-
-    todos = json.loads(res.text)
+    assert list_todo_res.status_code == 200
+    todos = json.loads(list_todo_res.text)
+    assert len(todos) == 1
 
     for todo in todos:
         print(f"todo id: {todo['id']}, json: {todo['title']}")
 
-def test_update_todos():
+def test_update_todos(todo_dict, temp_user):
     
     # PATCH /todos/{id}
     # from 'pending' to 'completed'
-    with open(config.consts.TODO_FILE_PATH, "r", encoding="utf-8") as f:
-        todo_pending_dict = json.loads(f.read())
 
-    todo_completed_dict = {
-        "status": "completed"
-    }
+    # 1. create a todo
+    create_todo_res = api.client.send_request(method="post",
+                                  path=f"/public/v2/users/{temp_user}/todos",
+                                  json=todo_dict,
+                                  expected_status=201)
+    assert create_todo_res.status_code == 201
+    create_todo_res_dict = json.loads(create_todo_res.text)
 
-    res = api.client.send_request(method="patch",
-                                  path="/public/v2"+"/"+"todos"+"/"+str(todo_pending_dict["id"]),
-                                  headers=config.consts.TOKEN,
-                                  json=todo_completed_dict,
+    # 2. update the status
+    todo_dict['status'] = "completed"
+
+    updated_todo_res = api.client.send_request(method="patch",
+                                  path=f"/public/v2/todos/{create_todo_res_dict["id"]}",
+                                  json=todo_dict,
                                   expected_status=200)
+    assert updated_todo_res.status_code == 200
+    updated_todo_res_dict = json.loads(updated_todo_res.text)
+    assert updated_todo_res_dict['status'] == 'completed'
 
     print("\ntest_update_todos passed!")
