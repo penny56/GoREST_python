@@ -37,7 +37,7 @@ def test_lifecycle(user_dict, post_dict):
     }
 
     comment_res = api.client.send_request(method="post",
-                                  path=f"/public/v2/posts/{create_post_res_dict["id"]}/comments",
+                                  path=f"/public/v2/posts/{create_post_res_dict['id']}/comments",
                                   json=comment_dict,
                                   expected_status=201)
     assert comment_res.status_code == 201
