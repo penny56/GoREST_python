@@ -8,9 +8,8 @@ BASE_HEADERS = {
     'Authorization': 'Bearer e7861a22e7bd14084b161ae87e57b4fbbd3213d2ea92f5bfd14a4838fee76b7b',
     'Content-Type': 'application/json',
     'Accept': '*/*',
-    'User-Agent': 'Apache-HttpClient/4.5.14 (Java/21.0.6)'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
 }
-TOKEN = {"Authorization": f"Bearer e7861a22e7bd14084b161ae87e57b4fbbd3213d2ea92f5bfd14a4838fee76b7b"}
 
 '''
 在这里，path需要包含 path parameter，而 query parameters需要以 dict 格式放在 params 参数中。
