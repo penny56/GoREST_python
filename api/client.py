@@ -7,8 +7,8 @@ BASE_URL = "https://gorest.co.in"
 BASE_HEADERS = {
     'Authorization': 'Bearer e7861a22e7bd14084b161ae87e57b4fbbd3213d2ea92f5bfd14a4838fee76b7b',
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'User-Agent': 'Automation-Pytest-Client/1.0 (Testing GoREST)'
+    'Accept': '*/*',
+    'User-Agent': 'Apache-HttpClient/4.5.14 (Java/21.0.6)'
 }
 TOKEN = {"Authorization": f"Bearer e7861a22e7bd14084b161ae87e57b4fbbd3213d2ea92f5bfd14a4838fee76b7b"}
 
