@@ -5,7 +5,7 @@ on:
 
 jobs:
   jmeter-run:
-    runs-on: [self-hosted, linux, ec2-jmeter]    # 使用 self-hosted 的 runner
+    runs-on: [self-hosted, ubut2404]    # 使用 self-hosted 的 runner
 
     steps:
       - name: Run JMeter Script
