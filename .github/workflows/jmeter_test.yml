@@ -25,11 +25,3 @@ jobs:
           
       - name: Confirm script finished
         run: echo "JMeter script executed successfully"
-
-
-TS=$(date +%Y%m%d_%H%M%S)
-
-jmeter -n \
-  -t /nvme1n1p1/jmeter/GoREST.jmx \
-  -l /nvme1n1p1/jmeter/results/GoREST_$TS.jtl \
-  -e -o /nvme1n1p1/jmeter/reports/GoREST_$TS
