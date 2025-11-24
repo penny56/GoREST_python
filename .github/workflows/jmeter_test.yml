@@ -3,14 +3,17 @@ name: JMeter Test
 on:
   workflow_dispatch:      # 允许手动触发这个 workflow
 
+  schedule:
+    - cron: '0 1 * * *'
+
 jobs:
   jmeter-run:
-    runs-on: [self-hosted, linux, ec2-jmeter]    # 使用 self-hosted 的 runner
+    runs-on: [self-hosted, ubut2404]    # 使用 self-hosted 的 runner
 
     steps:
       - name: Run JMeter Script
         run: |
-          cd /home/ubuntu/jmeter
+          cd /nvme1n1p1/jmeter
           ./GoREST.sh
         shell: bash
         
@@ -22,3 +25,11 @@ jobs:
           
       - name: Confirm script finished
         run: echo "JMeter script executed successfully"
+
+
+TS=$(date +%Y%m%d_%H%M%S)
+
+jmeter -n \
+  -t /nvme1n1p1/jmeter/GoREST.jmx \
+  -l /nvme1n1p1/jmeter/results/GoREST_$TS.jtl \
+  -e -o /nvme1n1p1/jmeter/reports/GoREST_$TS
