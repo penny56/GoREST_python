@@ -1,8 +1,6 @@
 import requests
 import urllib3
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 BASE_URL = "https://gorest.co.in"
 BASE_HEADERS = {
     'Authorization': 'Bearer e7861a22e7bd14084b161ae87e57b4fbbd3213d2ea92f5bfd14a4838fee76b7b',
@@ -21,6 +19,12 @@ def send_request(method: str,
                  json: dict = None,
                  params: dict = None,
                  expected_status: int = None):
+
+    '''
+    把 disable_warnings() 放在函数内部
+    以防止 Pytest 会在执行用例前重置警告配置
+    '''
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     url = f"{BASE_URL}{path}"
 
