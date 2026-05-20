@@ -8,8 +8,12 @@ on:
 
 jobs:
   test:
-    # runs-on: [self-hosted]    # 使用 self-hosted 的 runner
-    runs-on: ubuntu-latest      # 使用 GitHub hosted
+    runs-on: [self-hosted]    # 使用 self-hosted 的 runner
+    # ===============================================
+    # 不要使用 GitHub hosted runner
+    # 因为 GoREST 的 cloudflare 会阻挡跑在 Azure, AWS 上的 runners 
+    # ===============================================
+    # runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
